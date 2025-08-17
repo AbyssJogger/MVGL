@@ -8,7 +8,7 @@ use poetry for dependancy management
 
 ```sh
 poetry install
-poetry run src/manage.py makemigrations <APPNAME>
-poetry run src/manage.py migrate
-poetry run src/manage.py runserver
+poetry run manage.py makemigrations
+poetry run manage.py migrate
+poetry run manage.py runserver
 ```
