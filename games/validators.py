@@ -13,6 +13,7 @@ class LengthRangeValidator:
         elif len(value) < self.min:
             raise ValidationError(f'value is shorter than {self.min}')
 
+
 @deconstructible
 class MinMaxValidator:
     def __init__(self, min, max):

@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.db import models
 
 from .validators import LengthRangeValidator, MinMaxValidator
@@ -13,11 +14,13 @@ class DeveloperAndPublisher(models.Model):
     def __str__(self):
         return str(self.name)
 
+
 class Genre(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
         return str(self.name)
+
 
 class Game(models.Model):
     title = models.CharField(max_length=250)
@@ -33,3 +36,21 @@ class Game(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+
+class GameReview(models.Model):
+    class Status(models.IntegerChoices):
+        PLANNING = 0, 'Planning to play'
+        PLAYING = 1, 'Playing'
+        FINISHED_MAIN = 2, 'Finished main game'
+        COMPLETE = 3, 'Completed'
+        DROPPED = 4, 'Dropped'
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews')
+    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='game_reviews')
+    score = models.FloatField(validators=[MinMaxValidator(0, 10)])
+    recommend = models.BooleanField(default=True)
+    text = models.TextField(validators=[LengthRangeValidator(20, 2000)])
+    status = models.PositiveIntegerField(choices=Status.choices, default=Status.PLANNING)
+
+    def __str__(self):
+        return str(self.author) + '\'s review on ' + str(self.game)
