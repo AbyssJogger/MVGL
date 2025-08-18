@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>{{ page_title }}</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta name="keywords" content="{% for keyword in page_keywords %}{{ keyword }} ,{% endfor %}">		
+		<meta name="description" content="{{ page_description }}">
+		<meta name="author" content="{{ page_author }}">
+		<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
+		{% block page_head %}
+		{% endblock page_head%}
+	</head>
+	<body>
+
+		<header>
+			<div class="logo">MVGL</div>
+				<nav>
+					<a href="#" class="active">Homepage</a>
+					<a href="#">Top Games</a>
+					<a href="#">News</a>
+					<a href="#">Blog</a>
+					<a href="#">Forums</a>
+				</nav>
+			<div class="auth-buttons">
+				<button id="loginBtn">Login</button>
+				<button id="signupBtn">Signup</button>
+			</div>
+		</header>
+
+		{% block content%}
+		{% endblock content%}
+
+		<footer>
+		  &copy; 2025 MVGL - My VideoGame List. All rights reserved.
+		</footer>
+
+	</body>
+</html>
+

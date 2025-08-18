@@ -57,7 +57,7 @@ ROOT_URLCONF = 'mvgl.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -127,4 +127,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Media
 
 MEDIA_ROOT = 'media'
-MEDIA_URL = ''
+MEDIA_URL = 'media/'
+
+# Static files
+
+STATICFILES_DIRS = [BASE_DIR / 'static']
+STATIC_URL = 'static/'

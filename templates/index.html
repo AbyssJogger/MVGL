@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block page_head %}
+	<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
+{% endblock page_head %}
+{% block content %}
+<main>
+  <aside class="sidebar">
+    <section class="new-games">
+      <h3>New Games</h3>
+      <div class="sidebar-cards">
+		{% for game in new_games|slice:':5' %}
+        <div class="sidebar-card" tabindex="0" role="link" aria-label="{{ game.title }}">
+			<img src="{{ game.cover.url }}" alt="{{ game.title }}" />
+          <div class="sidebar-card-info">
+            <h4>{{ game.title }}</h4>
+			<p>
+			{{ game.genres.all|comma_seperated:'name' }}
+			</p>
+          </div>
+        </div>
+		{% endfor %}
+      </div>
+    </section>
+
+    <section class="news">
+      <h3>News</h3>
+      <div class="sidebar-cards">
+        <div class="sidebar-card" tabindex="0" role="article" aria-label="">
+          <img src="" alt="" />
+          <div class="sidebar-card-info">
+            <h4>title</h4>
+            <p>sub</p>
+          </div>
+        </div>
+    </section>
+  </aside>
+
+  <section class="content">
+    <div class="carousel">
+      <button class="arrow arrow-left" aria-label="Previous Slide">&#10094;</button>
+      <img src="" alt="" />
+      <div class="carousel-content">
+        <h2></h2>
+        <p></p>
+        <button class="watch-btn">More Details</button>
+      </div>
+      <button class="arrow arrow-right" aria-label="Next Slide">&#10095;</button>
+    </div>
+
+    <div class="section-header">
+      <div>Featured Games</div>
+    </div>
+
+    <div class="game-list">
+		{% for game in new_games %}
+      <div class="game-card">
+		  <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
+        <div class="game-info">
+			<h4>{{ game.title }}</h4>
+		  <p>{{ game.genres.all|comma_seperated:'name' }}</p>
+        </div>
+      </div>
+	  {% endfor %}
+    </div>
+  </section>
+</main>
+<script>
+	const games = [
+		{% for game in new_games|slice:':5' %}
+	{
+		image: "{{ game.banner.url }}",
+		title: "{{ game.title }}",
+		desc: "{{ game.description|slice:':10' }}",
+		url: "#"
+	},
+	{% endfor %}
+];
+
+let currentIndex = 0;
+
+const carousel = document.querySelector('.carousel');
+const leftBtn = carousel.querySelector('.arrow-left');
+const rightBtn = carousel.querySelector('.arrow-right');
+const img = carousel.querySelector('img');
+const title = carousel.querySelector('.carousel-content h2');
+const desc = carousel.querySelector('.carousel-content p');
+const watchBtn = carousel.querySelector('.watch-btn');
+
+function updateCarousel() {
+  const game = games[currentIndex];
+  img.src = game.image;
+  img.alt = game.title;
+  title.textContent = game.title;
+  desc.textContent = game.desc;
+  watchBtn.onclick = () => window.location.href = game.url;
+}
+
+leftBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex - 1 + games.length) % games.length;
+  updateCarousel();
+});
+
+rightBtn.addEventListener('click', () => {
+  currentIndex = (currentIndex + 1) % games.length;
+  updateCarousel();
+});
+
+// Auto slide every 5 seconds
+setInterval(() => {
+  currentIndex = (currentIndex + 1) % games.length;
+  updateCarousel();
+}, 5000);
+
+updateCarousel();
+
+</script>
+{% endblock content %}
