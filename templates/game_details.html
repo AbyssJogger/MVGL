@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block page_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game_details.css' %}">
+{% endblock page_head %}
+
+{% block content %}
+  <div class="game-details-container">
+
+  {% if game.banner %}
+  <img src="{{ game.banner.url }}" alt="{{ game.title }} Banner" class="game-banner">
+  {% endif %}
+
+  <div class="game-header">
+    <img src="{{ game.cover.url }}" alt="{{ game.title }} Cover" class="game-cover">
+
+    <div class="game-meta">
+      <h1 class="game-title">{{ game.title }}</h1>
+      <div class="game-subinfo">
+		  <p><strong>Developer:</strong> {% if game.developer %}{{ game.developer.name }}{% else %}Unknown{% endif %}</p>
+		  <p><strong>Publisher:</strong> {% if game.publisher %}{{ game.publisher.name }}{% else %}Unknown{% endif %}</p>
+        <p><strong>Release Date:</strong> {{ game.release_date }}</p>
+        <p><strong>Version:</strong> {{ game.version }}</p>
+        <p><strong>Rating:</strong> {{ game.rating }}</p>
+        <div class="genres">
+          {% for genre in game.genres.all %}
+            <span class="genre-tag">{{ genre.name }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="game-description">{{ game.description }}</div>
+
+  <div class="game-reviews">
+    <h2>Reviews</h2>
+    {% if reviews %}
+      {% for review in reviews %}
+        <div class="review">
+          <div class="review-header">
+            <span class="review-author">{{ review.author.username }}</span>
+            <span class="review-score">{{ review.score }}/10</span>
+          </div>
+          <div class="review-text">{{ review.text }}</div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p>No reviews yet.</p>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

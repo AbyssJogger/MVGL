@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from django.urls import reverse
 
 from .validators import LengthRangeValidator, MinMaxValidator
 
@@ -36,6 +37,9 @@ class Game(models.Model):
 
     def __str__(self):
         return str(self.title)
+
+    def get_absolute_url(self):
+        return reverse('game_details', args=[str(self.id)])
 
 
 class GameReview(models.Model):

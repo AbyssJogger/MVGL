@@ -14,10 +14,12 @@
         <div class="sidebar-card" tabindex="0" role="link" aria-label="{{ game.title }}">
 			<img src="{{ game.cover.url }}" alt="{{ game.title }}" />
           <div class="sidebar-card-info">
+			<a href="{{ game.get_absolute_url }}">
             <h4>{{ game.title }}</h4>
 			<p>
 			{{ game.genres.all|comma_seperated:'name' }}
 			</p>
+			</a>
           </div>
         </div>
 		{% endfor %}
@@ -57,10 +59,12 @@
 		{% for game in featured_games %}
       <div class="game-card">
 		  <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
+		<a href="{{ game.get_absolute_url }}">
         <div class="game-info">
 			<h4>{{ game.title }}</h4>
 			<p>{{ game.genres.all|comma_seperated:'name' }}</p>
 			<div class="game-score">Score: {{ game.rating }}</div>
+		</a>
         </div>
       </div>
 	  {% endfor %}
@@ -74,7 +78,7 @@
 		image: "{{ game.banner.url }}",
 		title: "{{ game.title }}",
 		desc: "{{ game.description|js_str|slice:':100' }}...",
-		url: "#"
+		url: "{{ game.get_absolute_url }}"
 	},
 	{% endfor %}
 ];

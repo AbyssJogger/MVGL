@@ -45,11 +45,13 @@
       {% if games %}
         {% for game in games %}
           <div class="game-card">
+			<a href="{{ game.get_absolute_url }}">
             <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
             <div class="game-info">
               <h4>{{ game.title }}</h4>
               <p>{{ game.genres.all|comma_seperated:'name' }}</p>
               <div class="game-score">Score: {{ game.rating }}</div>
+			</a>
             </div>
           </div>
         {% endfor %}

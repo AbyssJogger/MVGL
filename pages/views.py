@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from games.models import Game, Genre
@@ -69,3 +69,18 @@ def games_search_page_view(req):
         ctx['page_title'] = ctx['page_heading'] + ' - MVGL'
 
     return render(req, 'game_list.html', ctx)
+
+def game_detail_view(req, pk):
+    game = get_object_or_404(Game, pk=pk)
+    reviews = game.reviews.select_related('author').all()
+
+    ctx = {
+        'game': game,
+        'reviews': reviews,
+        'page_title': f'{game.title} - MVGL',
+        'page_keywords': ['game', 'video game', 'review', game.title],
+        'page_description': game.description,
+        'page_author': 'AbyssJogger',
+        'page_name': 'game_detail',
+    }
+    return render(req, 'game_details.html', ctx)

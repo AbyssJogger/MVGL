@@ -1,7 +1,8 @@
 from django.test import TestCase
 from django.urls import reverse
+from django.contrib.auth import get_user_model
 
-from games.models import Game, Genre, DeveloperAndPublisher
+from games.models import Game, Genre, DeveloperAndPublisher, GameReview
 
 
 class ViewsTestCase(TestCase):
@@ -109,4 +110,72 @@ class ViewsTestCase(TestCase):
         response_desc = self.client.get(url, {'orderby': '-rating'})
         games_desc = list(response_desc.context['games'])
         self.assertEqual(games_desc, sorted(games_desc, key=lambda g: g.rating, reverse=True))
+
+
+class GameDetailViewTest(TestCase):
+
+    def setUp(self):
+        # Create developer and publisher
+        self.dev = DeveloperAndPublisher.objects.create(name="DevTest", is_dev=True)
+        self.pub = DeveloperAndPublisher.objects.create(name="PubTest", is_pub=True)
+        
+        # Create genres
+        self.genre1 = Genre.objects.create(name="RPG")
+        self.genre2 = Genre.objects.create(name="Action")
+
+        # Create a game
+        self.game = Game.objects.create(
+            title="Test Game",
+            description="This is a test game description which is sufficiently long to pass validators.",
+            publisher=self.pub,
+            developer=self.dev,
+            rating=8.5,
+            cover="covers/test.jpg",
+            release_date="2024-01-01",
+            version="1.0.0"
+        )
+        self.game.genres.add(self.genre1, self.genre2)
+
+        # Create a user for reviews
+        self.user = get_user_model().objects.create_user(username='reviewer', password='pass1234')
+
+        # Create some reviews
+        self.review1 = GameReview.objects.create(
+            game=self.game,
+            author=self.user,
+            score=9.0,
+            recommend=True,
+            text="Great game! Loved the story and gameplay.",
+            status=GameReview.Status.FINISHED_MAIN,
+        )
+        self.review2 = GameReview.objects.create(
+            game=self.game,
+            author=self.user,
+            score=7.5,
+            recommend=False,
+            text="Good, but had some issues with bugs.",
+            status=GameReview.Status.PLAYING,
+        )
+
+    def test_game_details_status_code(self):
+        url = reverse('game_details', args=[self.game.id])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_game_details_uses_correct_template(self):
+        url = reverse('game_details', args=[self.game.id])
+        response = self.client.get(url)
+        self.assertTemplateUsed(response, 'game_details.html')
+
+    def test_game_details_context(self):
+        url = reverse('game_details', args=[self.game.id])
+        response = self.client.get(url)
+        self.assertEqual(response.context['game'], self.game)
+        self.assertIn(self.review1, response.context['reviews'])
+        self.assertIn(self.review2, response.context['reviews'])
+
+    def test_game_details_404_for_invalid_id(self):
+        url = reverse('game_details', args=[9999])  # Assuming this ID does not exist
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
