@@ -1,0 +1,143 @@
+.games-page {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  color: white;
+}
+
+.games-page h1 {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e94343;
+  padding-bottom: 0.3rem;
+  font-weight: 700;
+}
+
+.search-filter-form {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+}
+
+.search-filter-form input[type="search"] {
+  flex-grow: 1;
+  min-width: 180px;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background-color: #22293f;
+  color: white;
+}
+
+.search-filter-form select {
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  border: none;
+  font-size: 1rem;
+  background-color: #22293f;
+  color: white;
+  cursor: pointer;
+}
+
+.search-filter-form button {
+  background-color: #e94343;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  color: white;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.search-filter-form button:hover {
+  background-color: #c73c3c;
+}
+
+.game-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.game-card {
+  background-color: #1c2338;
+  border-radius: 6px;
+  width: 180px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.game-card:hover {
+  transform: scale(1.05);
+}
+
+.game-card img {
+  width: 100%;
+  display: block;
+  aspect-ratio: 3 / 4;
+  height: auto;
+  object-fit: cover;
+}
+
+.game-info {
+  padding: 0.75rem 0.75rem 1rem;
+}
+
+.game-info h4 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.game-info p {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #aaa;
+}
+
+.game-score {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #f0c040;
+}
+
+.pagination {
+  margin-top: 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+}
+
+.pagination a,
+.pagination .disabled {
+  padding: 0.4rem 0.8rem;
+  background-color: #22293f;
+  color: white;
+  border-radius: 4px;
+  text-decoration: none;
+  transition: background-color 0.2s ease;
+}
+
+.pagination a:hover {
+  background-color: #e94343;
+  color: white;
+}
+
+.pagination .disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination .current-page {
+  font-weight: bold;
+}
+

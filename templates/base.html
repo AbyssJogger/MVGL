@@ -5,7 +5,7 @@
 		<title>{{ page_title }}</title>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="keywords" content="{% for keyword in page_keywords %}{{ keyword }} ,{% endfor %}">		
+		<meta name="keywords" content="{% for keyword in page_keywords %}{{ keyword }}, {% endfor %}">		
 		<meta name="description" content="{{ page_description }}">
 		<meta name="author" content="{{ page_author }}">
 		<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
@@ -17,8 +17,9 @@
 		<header>
 			<div class="logo">MVGL</div>
 				<nav>
-					<a href="#" class="active">Homepage</a>
-					<a href="#">Top Games</a>
+					<a href="{% url 'home' %}" {% if page_name == 'home' %}class="active"{% endif %}>Homepage</a>
+					<a href="{% url 'games' %}?orderby=-rating" {% if page_name == 'games' and order_by == '-rating' %}class="active"{% endif %}>Top Games</a>
+					<a href="{% url 'games' %}" {% if page_name == 'games' and order_by != '-rating' %}class="active"{% endif %}>Browse Games</a>
 					<a href="#">News</a>
 					<a href="#">Blog</a>
 					<a href="#">Forums</a>

@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load custom_filters %}
+
+{% block page_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'css/game_list.css' %}">
+{% endblock page_head %}
+
+{% block content %}
+<main>
+  <section class="games-page">
+
+	  <h1>{{ page_heading }}</h1>
+
+    <!-- Search and filter form -->
+    <form method="get" class="search-filter-form" role="search" aria-label="Search and filter games">
+      <input 
+        type="search" 
+        name="search" 
+        placeholder="Search games..." 
+        value="{{ search_query|default:'' }}" 
+        aria-label="Search games by title"
+      />
+      
+      <select name="genre" aria-label="Filter games by genre">
+		<option value="">All Genres</option>
+		{% for genre in genres %}
+			<option value="{{ genre.name }}" {% if genre.name == genre_filter %}selected{% endif %}>{{ genre.name }}</option>
+        {% endfor %}
+      </select>
+
+		<select name="orderby" aria-label="Order games">
+			<option value="">Default Order</option>
+				<option value="-release_date" {% if order_by == '-release_date' %}selected{% endif %}>Newest</option>
+				<option value="release_date" {% if order_by == 'release_date' %}selected{% endif %}>Oldest</option>
+				<option value="-rating" {% if order_by == '-rating' %}selected{% endif %}>Highest Score</option>
+				<option value="rating" {% if order_by == 'rating' %}selected{% endif %}>Lowest Score</option>
+		</select>
+
+      <button type="submit">Apply</button>
+    </form>
+
+    <!-- Games list -->
+    <div class="game-list">
+      {% if games %}
+        {% for game in games %}
+          <div class="game-card">
+            <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
+            <div class="game-info">
+              <h4>{{ game.title }}</h4>
+              <p>{{ game.genres.all|comma_seperated:'name' }}</p>
+              <div class="game-score">Score: {{ game.rating }}</div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <p>No games found.</p>
+      {% endif %}
+    </div>
+  </section>
+  {% if is_paginated %}
+  <div class="pagination">
+    {% if games.has_previous %}
+      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if order_by %}orderby={{ order_by }}&{% endif %}{% if genre_filter %}genre={{ genre_filter }}&{% endif %}page={{ games.previous_page_number }}">&laquo; Prev</a>
+    {% else %}
+      <span class="disabled">&laquo; Prev</span>
+    {% endif %}
+
+    <span class="current-page">Page {{ current_page }} of {{ paginator.num_pages }}</span>
+
+    {% if games.has_next %}
+      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if order_by %}orderby={{ order_by }}&{% endif %}{% if genre_filter %}genre={{ genre_filter }}&{% endif %}page={{ games.next_page_number }}">Next &raquo;</a>
+    {% else %}
+      <span class="disabled">Next &raquo;</span>
+    {% endif %}
+  </div>
+{% endif %}
+
+</main>
+{% endblock content %}

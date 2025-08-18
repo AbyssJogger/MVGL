@@ -54,12 +54,13 @@
     </div>
 
     <div class="game-list">
-		{% for game in new_games %}
+		{% for game in featured_games %}
       <div class="game-card">
 		  <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
         <div class="game-info">
 			<h4>{{ game.title }}</h4>
-		  <p>{{ game.genres.all|comma_seperated:'name' }}</p>
+			<p>{{ game.genres.all|comma_seperated:'name' }}</p>
+			<div class="game-score">Score: {{ game.rating }}</div>
         </div>
       </div>
 	  {% endfor %}
@@ -68,11 +69,11 @@
 </main>
 <script>
 	const games = [
-		{% for game in new_games|slice:':5' %}
+		{% for game in best_games|slice:':5' %}
 	{
 		image: "{{ game.banner.url }}",
 		title: "{{ game.title }}",
-		desc: "{{ game.description|slice:':10' }}",
+		desc: "{{ game.description|js_str|slice:':100' }}...",
 		url: "#"
 	},
 	{% endfor %}

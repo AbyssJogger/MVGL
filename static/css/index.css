@@ -246,6 +246,13 @@
       font-size: 0.85rem;
       color: #aaa;
     }
+	.game-score {
+		margin-top: 0.5rem;
+		font-size: 0.9rem;
+		font-weight: bold;
+		color: #f0c040;
+	}
+
 
 /* Responsive Styles */
     @media (max-width: 1024px) {
