@@ -7,13 +7,12 @@ def home_page_view(req):
     games = Game.objects.all()
 
     ctx = {
-        'trending_games': games.order_by('-release_date')[:6], # Add weekly_view_count later
-        'popular_games': games.order_by('-rating')[:6], # Add total_view_count later
-        'most_viewed_games': games.order_by('-rating')[:6], # Add monthly_view_count later
+        'trending_games': games.order_by('-weekly_views', '-user_rating')[:6],
+        'popular_games': games.order_by('-user_rating')[:6],
+        'most_viewed_games': games.order_by('-monthly_views', '-total_views')[:6],
         'new_games': games.order_by('-release_date')[:6],
-        'carousel_games': games.filter(rating__gt=9.5),
-        # Random games to feature, definetely chagne this
-        'featured_games': games.order_by('?')[:5],
+        'carousel_games': games.filter(rating__gt=9.5, user_rating__gt=9)[:3],
+        'featured_games': games.order_by('?')[:5], # Random games to feature, definetely chagne this
         'page_keywords': ['videogame', 'entertainment', 'game', 'gamer', 'gaming', 'list', 'trailer', 'forums', 'community'],
         'page_description': 'A web app for keeping a list of video games you have played or are planning to play',
         'page_author': 'AbyssJogger',
@@ -30,13 +29,13 @@ def games_search_page_view(req):
 
     games = Game.objects.all()
 
-    most_viewed_games = games.order_by('-rating')[:6]
+    most_viewed_games = games.order_by('-total_views')[:6]
 
     if search_query:
         games = games.filter(title__icontains=search_query)
 
     if genre_filter:
-        games = games.filter(genres__name=genre_filter)
+        games = games.filter(genres__name__in=genre_filter)
 
     if orderby:
         games = games.order_by(orderby)
@@ -54,7 +53,7 @@ def games_search_page_view(req):
         games_page = paginator.page(paginator.num_pages)
 
     ctx = {
-        'most_viewed_games': most_viewed_games, # Add monthly_view_count later
+        'most_viewed_games': most_viewed_games,
         'games': games_page,
         'genres': genres,
         'search_query': search_query,

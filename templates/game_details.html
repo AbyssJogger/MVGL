@@ -25,18 +25,18 @@
                                 <div class="row">
                                     <div class="col-lg-6 col-md-6">
                                         <ul>
-											<li><span>Developer:</span> {% if game.developer %}{{game.developer}}{% else %}Unknown{% endif %}</li>
-											<li><span>Publisher:</span> {% if game.publisher %}{{game.publisher}}{% else %}Unknown{% endif %}</li>
+											<li><span>Developer:</span> {% if game.developer %}{{game.developer.all|comma_seperated:'name' }}{% else %}Unknown{% endif %}</li>
+											<li><span>Publisher:</span> {% if game.publisher %}{{game.publisher.all|comma_seperated:'name' }}{% else %}Unknown{% endif %}</li>
                                             <li><span>Release Date:</span> {{game.release_date }}</li>
 											<li><span>Genre:</span> {{ game.genres.all|comma_seperated:'name' }}</li>
-											<li><span>Online:</span> {{ game.online }}</li>
+											<li><span>Type:</span> {% if game.online and game.offline %}Online/Offline{% elif game.offline%}Offline{% elif game.online%}Online{% endif %}</li>
                                         </ul>
                                     </div>
                                     <div class="col-lg-6 col-md-6">
                                         <ul>
 											<li><span>User Rating:</span> {{ game.user_rating }} / {{ game.reviews.count }}</li>
 											<li><span>Rating:</span> {{ game.rating }}</li>
-											<li><span>Gameplay:</span> {{ game.gameplay_time}}</li>
+											<li><span>Gameplay:</span> {{ game.gameplay_duration}} hrs</li>
 											<li><span>Platforms:</span> {{ game.platforms.all|comma_seperated:'name' }}</li>
                                             <li><span>Views:</span> {{ game.total_views}}</li>
                                         </ul>
@@ -64,7 +64,7 @@
 									<img src="{{ review.author.image.url }}" alt="">
                                 </div>
                                 <div class="anime__review__item__text">
-									<h6>{{ review.author.username }} - <span>{{ review.created_at }}</span></h6>
+									<h6>{{ review.author.username }} - <span>{{ review.created_at|humanize_time }}</span></h6>
 									<p>{{ review.text }}</p>
                                 </div>
                             </div>
@@ -90,7 +90,7 @@
                             </div>
 							{% for game in related_games %}
 							<div class="product__sidebar__view__item set-bg" data-setbg="{{ game.banner.url }}">
-								<div class="ep">{{ game.rating}} / 10</div>
+								<div class="ep">{{ game.rating}} / 10 | {{ game.user_rating}} / 10</div>
 								<div class="view"><i class="fa fa-eye"></i> {{ game.total_views }}</div>
 								<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
                             </div>
