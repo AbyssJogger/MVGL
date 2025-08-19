@@ -1,82 +1,161 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static%}
 {% load custom_filters %}
 
-{% block page_head %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/game_list.css' %}">
-{% endblock page_head %}
-
-{% block content %}
-<main>
-  <section class="games-page">
-
-	  <h1>{{ page_heading }}</h1>
-
-    <!-- Search and filter form -->
-    <form method="get" class="search-filter-form" role="search" aria-label="Search and filter games">
-      <input 
-        type="search" 
-        name="search" 
-        placeholder="Search games..." 
-        value="{{ search_query|default:'' }}" 
-        aria-label="Search games by title"
-      />
-      
-      <select name="genre" aria-label="Filter games by genre">
-		<option value="">All Genres</option>
-		{% for genre in genres %}
-			<option value="{{ genre.name }}" {% if genre.name == genre_filter %}selected{% endif %}>{{ genre.name }}</option>
-        {% endfor %}
-      </select>
-
-		<select name="orderby" aria-label="Order games">
-			<option value="">Default Order</option>
-				<option value="-release_date" {% if order_by == '-release_date' %}selected{% endif %}>Newest</option>
-				<option value="release_date" {% if order_by == 'release_date' %}selected{% endif %}>Oldest</option>
-				<option value="-rating" {% if order_by == '-rating' %}selected{% endif %}>Highest Score</option>
-				<option value="rating" {% if order_by == 'rating' %}selected{% endif %}>Lowest Score</option>
-		</select>
-
-      <button type="submit">Apply</button>
-    </form>
-
-    <!-- Games list -->
-    <div class="game-list">
-      {% if games %}
-        {% for game in games %}
-          <div class="game-card">
-			<a href="{{ game.get_absolute_url }}">
-            <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
-            <div class="game-info">
-              <h4>{{ game.title }}</h4>
-              <p>{{ game.genres.all|comma_seperated:'name' }}</p>
-              <div class="game-score">Score: {{ game.rating }}</div>
-			</a>
+	{% block content %}
+	<!-- Product Section Begin -->
+    <section class="product-page spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="product__page__content">
+                        <div class="product__page__title">
+                            <div class="row">
+                                <div class="col-lg-8 col-md-8 col-sm-6">
+                                    <div class="section-title">
+										<h4>{{ page_heading }}</h4>
+                                    </div>
+                                </div>
+                                <form class="col-lg-4 col-md-4 col-sm-6" action="" method="GET">
+                                    <div class="product__page__filter">
+                                        <p>Genre:</p>
+                                        <select name="genre">
+											<option value="">All Genres</option>
+											{% for genre in genres %}
+											<option value="{{ genre.name }}" {% if genre.name == genre_filter %}selected{% endif %}>{{ genre.name }}</option>
+											{% endfor %}
+                                        </select>
+                                    </div>
+									<div class="product__page__filter">
+                                        <p>Order by:</p>
+                                        <select name="orderby">
+                                            <option value="">Default Order</option>
+                                            <option value="-release_date" {% if order_by == '-release_date' %}selected{% endif %}>Newests</option>
+                                            <option value="release_date" {% if order_by == 'release_date' %}selected{% endif %}>Oldests</option>
+                                            <option value="-rating" {% if order_by == '-rating' %}selected{% endif %}>Highest Score</option>
+                                            <option value="rating" {% if order_by == 'rating' %}selected{% endif %}>Lowest Score</option>
+                                        </select>
+                                    </div>
+									<input type="hidden" name="search" value="{{ search_query }}">
+									<input type="submit" value="Apply">
+                                </form>
+                            </div>
+                        </div>
+                        <div class="row">
+							{% for game in games %}
+							<div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+									<div class="product__item__pic set-bg" data-setbg="{{ game.cover.url }}">
+										<div class="ep">{{ game.rating }} / 10</div>
+										<div class="comment"><i class="fa fa-comments"></i> {{ game.reviews.count }}</div>
+										<div class="view"><i class="fa fa-eye"></i> {{ game.total_views}}</div>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <ul>
+											{% for genre in game.genres.all %}
+											<li>{{ genre.name }}</li>
+											{% endfor %}
+                                        </ul>
+										<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+                                    </div>
+                                </div>
+                            </div>
+							{% endfor %}
+                        </div>
+                    </div>
+					{% if is_paginated %}
+                    <div class="product__pagination">
+						{% if prev_page > 0 %}
+                        <a href="{% url 'games' %}?{% if genre_filter %}genre={{ genre_filter}}&{% endif %}page=1"><i class="fa fa-angle-double-left"></i></a>
+						<a href="{% url 'games' %}?{% if genre_filter %}genre={{ genre_filter}}&{% endif %}page={{ prev_page }}">{{ prev_page }}</a>
+						{% endif %}
+						<a href="#" class="current-page">{{ curr_page }}</a>
+						{% for i in next_pages %}
+                        <a href="{% url 'games' %}?{% if genre_filter %}genre={{ genre_filter}}&{% endif %}page={{ i }}">{{ i }}</a>
+						{% endfor %}
+						{% if not curr_page == paginator.num_pages %}
+						<a href="{% url 'games' %}?{% if genre_filter %}genre={{ genre_filter}}&{% endif %}page={{ paginator.num_pages}}"><i class="fa fa-angle-double-right"></i></a>
+						{% endif %}
+                    </div>
+					{% endif %}
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <div class="product__sidebar">
+                        <div class="product__sidebar__view">
+                            <div class="section-title">
+                                <h5>Top Views</h5>
+                            </div>
+				{% for game in most_viewed_games %}
+                <div class="product__sidebar__view__item set-bg"
+					 data-setbg="{{ game.banner.url }}">
+					<div class="ep">{{ game.rating }} / 10</div>
+					<div class="view"><i class="fa fa-eye"></i> {{ game.total_views }}</div>
+					<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
             </div>
-          </div>
-        {% endfor %}
-      {% else %}
-        <p>No games found.</p>
-      {% endif %}
+			{% endfor %}
+        </div>
     </div>
-  </section>
-  {% if is_paginated %}
-  <div class="pagination">
-    {% if games.has_previous %}
-      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if order_by %}orderby={{ order_by }}&{% endif %}{% if genre_filter %}genre={{ genre_filter }}&{% endif %}page={{ games.previous_page_number }}">&laquo; Prev</a>
-    {% else %}
-      <span class="disabled">&laquo; Prev</span>
-    {% endif %}
-
-    <span class="current-page">Page {{ current_page }} of {{ paginator.num_pages }}</span>
-
-    {% if games.has_next %}
-      <a href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if order_by %}orderby={{ order_by }}&{% endif %}{% if genre_filter %}genre={{ genre_filter }}&{% endif %}page={{ games.next_page_number }}">Next &raquo;</a>
-    {% else %}
-      <span class="disabled">Next &raquo;</span>
-    {% endif %}
-  </div>
-{% endif %}
-
-</main>
-{% endblock content %}
+    <div class="product__sidebar__comment">
+        <div class="section-title">
+            <h5>New Posts</h5>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-1.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">The Seven Deadly Sins: Wrath of the Gods</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-2.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Shirogane Tamashii hen Kouhan sen</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-3.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Kizumonogatari III: Reiket su-hen</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-4.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Monogatari Series: Second Season</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Section End -->
+	{% endblock content %}

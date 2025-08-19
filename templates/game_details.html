@@ -1,55 +1,104 @@
-{% extends 'base.html' %}
-{% load static %}
+<{% extends 'base.html' %}
+{% load static%}
+{% load custom_filters %}
 
-{% block page_head %}
-<link rel="stylesheet" type="text/css" href="{% static 'css/game_details.css' %}">
-{% endblock page_head %}
-
-{% block content %}
-  <div class="game-details-container">
-
-  {% if game.banner %}
-  <img src="{{ game.banner.url }}" alt="{{ game.title }} Banner" class="game-banner">
-  {% endif %}
-
-  <div class="game-header">
-    <img src="{{ game.cover.url }}" alt="{{ game.title }} Cover" class="game-cover">
-
-    <div class="game-meta">
-      <h1 class="game-title">{{ game.title }}</h1>
-      <div class="game-subinfo">
-		  <p><strong>Developer:</strong> {% if game.developer %}{{ game.developer.name }}{% else %}Unknown{% endif %}</p>
-		  <p><strong>Publisher:</strong> {% if game.publisher %}{{ game.publisher.name }}{% else %}Unknown{% endif %}</p>
-        <p><strong>Release Date:</strong> {{ game.release_date }}</p>
-        <p><strong>Version:</strong> {{ game.version }}</p>
-        <p><strong>Rating:</strong> {{ game.rating }}</p>
-        <div class="genres">
-          {% for genre in game.genres.all %}
-            <span class="genre-tag">{{ genre.name }}</span>
-          {% endfor %}
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="game-description">{{ game.description }}</div>
-
-  <div class="game-reviews">
-    <h2>Reviews</h2>
-    {% if reviews %}
-      {% for review in reviews %}
-        <div class="review">
-          <div class="review-header">
-            <span class="review-author">{{ review.author.username }}</span>
-            <span class="review-score">{{ review.score }}/10</span>
-          </div>
-          <div class="review-text">{{ review.text }}</div>
-        </div>
-      {% endfor %}
-    {% else %}
-      <p>No reviews yet.</p>
-    {% endif %}
-  </div>
-
-</div>
-{% endblock %}
+	{% block content %}
+	<!-- Anime Section Begin -->
+    <section class="anime-details spad">
+        <div class="container">
+            <div class="anime__details__content">
+                <div class="row">
+                    <div class="col-lg-3">
+						<div class="anime__details__pic set-bg" data-setbg="{{ game.cover.url }}">
+							<div class="comment"><i class="fa fa-comments"></i> {{ game.reviews.count }}</div>
+							<div class="view"><i class="fa fa-eye"></i> {{ game.total_views}}</div>
+                        </div>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="anime__details__text">
+                            <div class="anime__details__title">
+								<h3>{{ game.title }}</h3>
+								<span>{{ game.subtitle}}</span>
+                            </div>
+							<p>{{ game.description }}</p>
+                            <div class="anime__details__widget">
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <ul>
+											<li><span>Developer:</span> {% if game.developer %}{{game.developer}}{% else %}Unknown{% endif %}</li>
+											<li><span>Publisher:</span> {% if game.publisher %}{{game.publisher}}{% else %}Unknown{% endif %}</li>
+                                            <li><span>Release Date:</span> {{game.release_date }}</li>
+											<li><span>Genre:</span> {{ game.genres.all|comma_seperated:'name' }}</li>
+											<li><span>Online:</span> {{ game.online }}</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <ul>
+											<li><span>User Rating:</span> {{ game.user_rating }} / {{ game.reviews.count }}</li>
+											<li><span>Rating:</span> {{ game.rating }}</li>
+											<li><span>Gameplay:</span> {{ game.gameplay_time}}</li>
+											<li><span>Platforms:</span> {{ game.platforms.all|comma_seperated:'name' }}</li>
+                                            <li><span>Views:</span> {{ game.total_views}}</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="anime__details__btn">
+                                <a href="#" class="follow-btn"><i class="fa fa-heart-o"></i> Favorite</a>
+                                <a href="#" class="watch-btn"><span>Add to list</span> <i class="fa fa-angle-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-8 col-md-8">
+                        <div class="anime__details__review">
+                            <div class="section-title">
+                                <h5>Reviews</h5>
+                            </div>
+							{% if game.reviews.count %}
+							{% for review in game.reviews.all|slice:':10' %}
+                            <div class="anime__review__item">
+                                <div class="anime__review__item__pic">
+									<img src="{{ review.author.image.url }}" alt="">
+                                </div>
+                                <div class="anime__review__item__text">
+									<h6>{{ review.author.username }} - <span>{{ review.created_at }}</span></h6>
+									<p>{{ review.text }}</p>
+                                </div>
+                            </div>
+							{% endfor %}
+							{% else %}
+							<p style="color: white;">No reviews yet...</p>
+							{% endif %}
+                        </div>
+                        <div class="anime__details__form">
+                            <div class="section-title">
+                                <h5>Your Comment</h5>
+                            </div>
+                            <form action="#">
+                                <textarea placeholder="Your Comment"></textarea>
+                                <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <div class="anime__details__sidebar">
+                            <div class="section-title">
+                                <h5>you might like...</h5>
+                            </div>
+							{% for game in related_games %}
+							<div class="product__sidebar__view__item set-bg" data-setbg="{{ game.banner.url }}">
+								<div class="ep">{{ game.rating}} / 10</div>
+								<div class="view"><i class="fa fa-eye"></i> {{ game.total_views }}</div>
+								<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+                            </div>
+							{% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- Anime Section End -->
+	{% endblock content %}

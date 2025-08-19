@@ -1,124 +1,219 @@
 {% extends 'base.html' %}
-{% load static %}
+{% load static%}
 {% load custom_filters %}
-{% block page_head %}
-	<link rel="stylesheet" type="text/css" href="{% static 'css/index.css' %}">
-{% endblock page_head %}
-{% block content %}
-<main>
-  <aside class="sidebar">
-    <section class="new-games">
-      <h3>New Games</h3>
-      <div class="sidebar-cards">
-		{% for game in new_games|slice:':5' %}
-        <div class="sidebar-card" tabindex="0" role="link" aria-label="{{ game.title }}">
-			<img src="{{ game.cover.url }}" alt="{{ game.title }}" />
-          <div class="sidebar-card-info">
-			<a href="{{ game.get_absolute_url }}">
-            <h4>{{ game.title }}</h4>
-			<p>
-			{{ game.genres.all|comma_seperated:'name' }}
-			</p>
-			</a>
-          </div>
-        </div>
-		{% endfor %}
-      </div>
-    </section>
 
-    <section class="news">
-      <h3>News</h3>
-      <div class="sidebar-cards">
-        <div class="sidebar-card" tabindex="0" role="article" aria-label="">
-          <img src="" alt="" />
-          <div class="sidebar-card-info">
-            <h4>title</h4>
-            <p>sub</p>
-          </div>
+	{% block content %}
+	<!-- Hero Section Begin -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero__slider owl-carousel">
+				{% for game in carousel_games %}
+				<div class="hero__items set-bg" data-setbg="{{ game.banner.url }}">
+                    <div class="row">
+                        <div class="col-lg-6">
+                            <div class="hero__text">
+								<div class="label">{{ game.genres.all|comma_seperated:'name' }}</div>
+								<h2>{{ game.title }}</h2>
+								<p>{{ game.description|slice:':50'}}...</p>
+								<a href="{{ game.get_absolute_url }}"><span>More Details</span> <i class="fa fa-angle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+				{% endfor %}
+            </div>
         </div>
     </section>
-  </aside>
+    <!-- Hero Section End -->
 
-  <section class="content">
-    <div class="carousel">
-      <button class="arrow arrow-left" aria-label="Previous Slide">&#10094;</button>
-      <img src="" alt="" />
-      <div class="carousel-content">
-        <h2></h2>
-        <p></p>
-        <button class="watch-btn">More Details</button>
-      </div>
-      <button class="arrow arrow-right" aria-label="Next Slide">&#10095;</button>
-    </div>
-
-    <div class="section-header">
-      <div>Featured Games</div>
-    </div>
-
-    <div class="game-list">
-		{% for game in featured_games %}
-      <div class="game-card">
-		  <img src="{{ game.cover.url }}" alt="{{ game.title }}" />
-		<a href="{{ game.get_absolute_url }}">
-        <div class="game-info">
-			<h4>{{ game.title }}</h4>
-			<p>{{ game.genres.all|comma_seperated:'name' }}</p>
-			<div class="game-score">Score: {{ game.rating }}</div>
-		</a>
+    <!-- Product Section Begin -->
+    <section class="product spad">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="trending__product">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <div class="section-title">
+                                    <h4>Trending Now</h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="btn__all">
+                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+							{% for game in trending_games %}
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+									<div class="product__item__pic set-bg" data-setbg="{{ game.cover.url }}">
+										<div class="ep">{{ game.rating}} / 10</div>
+										<div class="comment"><i class="fa fa-comments"></i> {{ game.reviews.count }}</div>
+										<div class="view"><i class="fa fa-eye"></i> {{ game.total_views}}</div>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <ul>
+											{% for genre in game.genres.all %}
+											<li>{{ genre.name }}</li>
+											{% endfor %}
+                                        </ul>
+										<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+                                    </div>
+                                </div>
+                            </div>
+							{% endfor %}
+                        </div>
+                    </div>
+                    <div class="popular__product">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <div class="section-title">
+                                    <h4>Popular Games</h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="btn__all">
+                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for game in popular_games %}
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+									<div class="product__item__pic set-bg" data-setbg="{{ game.cover.url }}">
+										<div class="ep">{{ game.rating}} / 10</div>
+										<div class="comment"><i class="fa fa-comments"></i> {{ game.reviews.count }}</div>
+										<div class="view"><i class="fa fa-eye"></i> {{ game.total_views}}</div>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <ul>
+											{% for genre in game.genres.all %}
+											<li>{{ genre.name }}</li>
+											{% endfor %}
+                                        </ul>
+										<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+                                    </div>
+                                </div>
+                            </div>
+							{% endfor %}
+                        </div>
+                    </div>
+                    <div class="recent__product">
+                        <div class="row">
+                            <div class="col-lg-8 col-md-8 col-sm-8">
+                                <div class="section-title">
+                                    <h4>Recently Added Games</h4>
+                                </div>
+                            </div>
+                            <div class="col-lg-4 col-md-4 col-sm-4">
+                                <div class="btn__all">
+                                    <a href="#" class="primary-btn">View All <span class="arrow_right"></span></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            {% for game in new_games %}
+                            <div class="col-lg-4 col-md-6 col-sm-6">
+                                <div class="product__item">
+									<div class="product__item__pic set-bg" data-setbg="{{ game.cover.url }}">
+										<div class="ep">{{ game.rating}} / 10</div>
+										<div class="comment"><i class="fa fa-comments"></i> {{ game.reviews.count }}</div>
+										<div class="view"><i class="fa fa-eye"></i> {{ game.total_views}}</div>
+                                    </div>
+                                    <div class="product__item__text">
+                                        <ul>
+											{% for genre in game.genres.all %}
+											<li>{{ genre.name }}</li>
+											{% endfor %}
+                                        </ul>
+										<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+                                    </div>
+                                </div>
+                            </div>
+							{% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-md-6 col-sm-8">
+                    <div class="product__sidebar">
+                        <div class="product__sidebar__view">
+                            <div class="section-title">
+                                <h5>Top Views</h5>
+                            </div>
+				{% for game in most_viewed_games %}
+                <div class="product__sidebar__view__item set-bg"
+					 data-setbg="{{ game.banner.url }}">
+					<div class="ep">{{ game.rating }} / 10</div>
+					<div class="view"><i class="fa fa-eye"></i> {{ game.total_views }}</div>
+					<h5><a href="{{ game.get_absolute_url }}">{{ game.title }}</a></h5>
+            </div>
+			{% endfor %}
         </div>
-      </div>
-	  {% endfor %}
     </div>
-  </section>
-</main>
-<script>
-	const games = [
-		{% for game in best_games|slice:':5' %}
-	{
-		image: "{{ game.banner.url }}",
-		title: "{{ game.title }}",
-		desc: "{{ game.description|js_str|slice:':100' }}...",
-		url: "{{ game.get_absolute_url }}"
-	},
-	{% endfor %}
-];
-
-let currentIndex = 0;
-
-const carousel = document.querySelector('.carousel');
-const leftBtn = carousel.querySelector('.arrow-left');
-const rightBtn = carousel.querySelector('.arrow-right');
-const img = carousel.querySelector('img');
-const title = carousel.querySelector('.carousel-content h2');
-const desc = carousel.querySelector('.carousel-content p');
-const watchBtn = carousel.querySelector('.watch-btn');
-
-function updateCarousel() {
-  const game = games[currentIndex];
-  img.src = game.image;
-  img.alt = game.title;
-  title.textContent = game.title;
-  desc.textContent = game.desc;
-  watchBtn.onclick = () => window.location.href = game.url;
-}
-
-leftBtn.addEventListener('click', () => {
-  currentIndex = (currentIndex - 1 + games.length) % games.length;
-  updateCarousel();
-});
-
-rightBtn.addEventListener('click', () => {
-  currentIndex = (currentIndex + 1) % games.length;
-  updateCarousel();
-});
-
-// Auto slide every 5 seconds
-setInterval(() => {
-  currentIndex = (currentIndex + 1) % games.length;
-  updateCarousel();
-}, 5000);
-
-updateCarousel();
-
-</script>
+    <div class="product__sidebar__comment">
+        <div class="section-title">
+            <h5>New Posts</h5>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-1.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">The Seven Deadly Sins: Wrath of the Gods</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-2.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Shirogane Tamashii hen Kouhan sen</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-3.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Kizumonogatari III: Reiket su-hen</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+        <div class="product__sidebar__comment__item">
+            <div class="product__sidebar__comment__item__pic">
+                <img src="img/sidebar/comment-4.jpg" alt="">
+            </div>
+            <div class="product__sidebar__comment__item__text">
+                <ul>
+                    <li>Active</li>
+                    <li>Movie</li>
+                </ul>
+                <h5><a href="#">Monogatari Series: Second Season</a></h5>
+                <span><i class="fa fa-eye"></i> 19.141 Viewes</span>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Product Section End -->
 {% endblock content %}
