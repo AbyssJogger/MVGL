@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     # Local
     'games.apps.GamesConfig',
     'pages.apps.PagesConfig',
+    'accounts.apps.AccountsConfig',
 ]
 
 MIDDLEWARE = [
@@ -133,3 +134,7 @@ MEDIA_URL = 'media/'
 
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_URL = 'static/'
+
+# Redirect
+LOGIN_REDIRECT_URL = 'home'
+LOGOUT_REDIRECT_URL = 'home'
