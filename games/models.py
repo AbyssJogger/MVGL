@@ -6,6 +6,7 @@ from django.utils.choices import BlankChoiceIterator
 
 from .validators import LengthRangeValidator, MinMaxValidator
 
+User = get_user_model()
 
 class DeveloperAndPublisher(models.Model):
     name = models.CharField(max_length=250, unique=True)
@@ -68,7 +69,7 @@ class GameReview(models.Model):
         COMPLETE = 3, 'Completed'
         DROPPED = 4, 'Dropped'
     game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='reviews')
-    author = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='game_reviews')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game_reviews')
     score = models.FloatField(validators=[MinMaxValidator(0, 10)])
     recommend = models.BooleanField(default=True)
     text = models.TextField(validators=[LengthRangeValidator(20, 2000)])
@@ -78,3 +79,7 @@ class GameReview(models.Model):
 
     def __str__(self):
         return str(self.author) + '\'s review on ' + str(self.game)
+
+class GameView(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='game_views')
+    game = models.ForeignKey(Game, on_delete=models.CASCADE, related_name='views')

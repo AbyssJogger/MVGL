@@ -1,4 +1,4 @@
 __pycache__
 db.sqlite3
 media
-games/management
+games/management/commands/populate_games.py

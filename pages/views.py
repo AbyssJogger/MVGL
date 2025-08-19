@@ -1,7 +1,8 @@
 from django.shortcuts import render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.db.models import F
 
-from games.models import Game, Genre
+from games.models import Game, Genre, GameView
 
 def home_page_view(req):
     games = Game.objects.all()
@@ -80,6 +81,28 @@ def games_search_page_view(req):
 
 def game_detail_view(req, pk):
     game = get_object_or_404(Game, pk=pk)
+    changed = False
+
+    if req.user.is_authenticated:
+        _, created = GameView.objects.get_or_create(user=req.user, game=game) # Create an entry for each user that visits the page
+        if created:
+            game.total_views = F('weekly_views') + 1
+            game.total_views = F('monthly_views') + 1
+            game.total_views = F('total_views') + 1
+            game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
+            changed = True
+    else:
+        viewed_pages = req.session.get('viewed_pages', [])
+        if pk not in viewed_pages:
+            game.total_views = F('weekly_views') + 1
+            game.total_views = F('monthly_views') + 1
+            game.total_views = F('total_views') + 1
+            game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
+            changed = True
+   
+    if changed:
+        game.refresh_from_db() # Get the updated data if any update has happened
+
     reviews = game.reviews.select_related('author').all()
 
     ctx = {
