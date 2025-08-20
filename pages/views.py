@@ -1,8 +1,10 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.db.models import F
+from django.db.models import F, Avg
+from django.urls import reverse_lazy
 
-from games.models import Game, Genre, GameView
+from games.forms import GameReviewForm
+from games.models import Game, Genre, GameView, GameReview
 
 def home_page_view(req):
     games = Game.objects.all()
@@ -81,27 +83,53 @@ def games_search_page_view(req):
 
 def game_detail_view(req, pk):
     game = get_object_or_404(Game, pk=pk)
-    changed = False
+    
+    if req.method == 'POST':
+        if req.user.is_authenticated:
+            prev_review = GameReview.objects.filter(game=game, author=req.user).first()
+            form = GameReviewForm(req.POST)
+            if form.is_valid():
+                review = form.save(commit=False)
+                review.author = req.user
+                review.game = game
+                if prev_review:
+                    prev_review.score = form.cleaned_data['score']
+                    prev_review.recommend = form.cleaned_data['recommend']
+                    prev_review.status = form.cleaned_data['status']
+                    prev_review.platforms.set(form.cleaned_data['platforms'])
+                    prev_review.text = form.cleaned_data['text']
+                    prev_review.save()
+                else:
+                    review.save()
 
-    if req.user.is_authenticated:
-        _, created = GameView.objects.get_or_create(user=req.user, game=game) # Create an entry for each user that visits the page
-        if created:
-            game.total_views = F('weekly_views') + 1
-            game.total_views = F('monthly_views') + 1
-            game.total_views = F('total_views') + 1
-            game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
-            changed = True
+                avg_rating = GameReview.objects.filter(game=game).aggregate(Avg('score'))['score__avg']
+                game.user_rating = avg_rating
+                game.save()
+                
+                return redirect(reverse_lazy('game_details', kwargs={'pk':pk}))
     else:
-        viewed_pages = req.session.get('viewed_pages', [])
-        if pk not in viewed_pages:
-            game.total_views = F('weekly_views') + 1
-            game.total_views = F('monthly_views') + 1
-            game.total_views = F('total_views') + 1
-            game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
-            changed = True
-   
-    if changed:
-        game.refresh_from_db() # Get the updated data if any update has happened
+        form = GameReviewForm()
+        changed = False
+
+        if req.user.is_authenticated:
+            _, created = GameView.objects.get_or_create(user=req.user, game=game) # Create an entry for each user that visits the page
+            if created:
+                game.total_views = F('weekly_views') + 1
+                game.total_views = F('monthly_views') + 1
+                game.total_views = F('total_views') + 1
+                game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
+                changed = True
+        else:
+            viewed_pages = req.session.get('viewed_pages', [])
+            if pk not in viewed_pages:
+                game.total_views = F('weekly_views') + 1
+                game.total_views = F('monthly_views') + 1
+                game.total_views = F('total_views') + 1
+                game.save(update_fields=['weekly_views', 'monthly_views', 'total_views'])
+                changed = True
+       
+        if changed:
+            game.refresh_from_db() # Get the updated data if any update has happened
 
     reviews = game.reviews.select_related('author').all()
 
@@ -113,6 +141,7 @@ def game_detail_view(req, pk):
         'page_description': game.description,
         'page_author': 'AbyssJogger',
         'page_name': 'game_detail',
-        'related_games': Game.objects.filter(genres__in=game.genres.all()).exclude(id=game.id).distinct()[:5]
+        'related_games': Game.objects.filter(genres__in=game.genres.all()).exclude(id=game.id).distinct()[:5],
+        'review_form': form
     }
     return render(req, 'game_details.html', ctx)

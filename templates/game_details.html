@@ -64,7 +64,7 @@
 									<img src="{{ review.author.image.url }}" alt="">
                                 </div>
                                 <div class="anime__review__item__text">
-									<h6>{{ review.author.username }} - <span>{{ review.created_at|humanize_time }}</span></h6>
+									<h6>{{ review.author.username }} - <span>{{ review.created_at|humanize_time }} - {% if review.recommend %}Recommended - {% endif %}{{ review.score }} / 10</span></h6>
 									<p>{{ review.text }}</p>
                                 </div>
                             </div>
@@ -73,15 +73,18 @@
 							<p style="color: white;">No reviews yet...</p>
 							{% endif %}
                         </div>
+						{% if user.is_authenticated %}
                         <div class="anime__details__form">
                             <div class="section-title">
                                 <h5>Your Comment</h5>
                             </div>
-                            <form action="#">
-                                <textarea placeholder="Your Comment"></textarea>
+                            <form method="POST">
+								{% csrf_token %}
+								{{ review_form.as_p }}
                                 <button type="submit"><i class="fa fa-location-arrow"></i> Review</button>
                             </form>
                         </div>
+						{% endif %}
                     </div>
                     <div class="col-lg-4 col-md-4">
                         <div class="anime__details__sidebar">
